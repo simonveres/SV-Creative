@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio | SV Creative</title>
+    <meta name="description" content="Portfolio SV Creative menampilkan website, CV, photography, videography, dan design yang telah dibuat." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <script defer src="../assets/js/main.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="welcome-bar" role="note">
+        <span data-i18n="welcomeGreeting">Selamat Datang di SV Creative</span>
+        <span class="welcome-tagline" data-i18n="welcomeDescriptor">Digital · Creative · Visual</span>
+      </div>
+      <div class="container nav-wrap">
+        <a href="../index.html" class="brand" aria-label="SV Creative home">
+          <span class="brand-logo-frame"><img class="brand-logo" src="../assets/images/logo/logo%20SV%20Creative.png" alt="" /></span>
+          <span class="brand-text">SV Creative</span>
+        </a>
+        <button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" aria-label="Buka atau tutup menu navigasi" data-i18n-aria-label="navToggleLabel">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path class="menu-line menu-line-top" d="M4 6h16"/><path class="menu-line menu-line-middle" d="M4 12h16"/><path class="menu-line menu-line-bottom" d="M4 18h16"/></svg>
+        </button>
+        <nav class="main-nav" id="primary-navigation" aria-label="Main navigation">
+          <a href="../index.html#home" data-i18n="navHome">Beranda</a>
+          <a href="portofolio.html" class="active" aria-current="page" data-i18n="navWork">Karya</a>
+          <a href="layanan.html" data-i18n="navServices">Layanan</a>
+          <a href="klien.html" data-i18n="navClients">Klien</a>
+          <a href="tentang.html" data-i18n="navAbout">Tentang</a>
+          <a href="kontak.html" data-i18n="navContact">Kontak</a>
+          <a href="faq.html" data-i18n="footerFAQ">FAQ</a>
+        </nav>
+
+        <div class="lang-switcher">
+          <button type="button" class="lang-trigger" aria-label="Pilih Bahasa" aria-controls="language-options" aria-expanded="false">
+            <span class="lang-trigger-label">Pilih Bahasa</span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 7.5 5 5 5-5" /></svg>
+          </button>
+          <div class="lang-options" id="language-options" role="menu" aria-label="Pilih bahasa" hidden></div>
+        </div>
+
+        <a href="#" class="btn btn-primary" data-whatsapp="Halo SV Creative, saya ingin melihat portfolio Anda." data-i18n="bookNow">BOOK VIA WHATSAPP</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-hero">
+        <div class="container">
+          <div class="page-banner">
+            <div class="page-banner-inner">
+              <span class="eyebrow" data-i18n="navPortfolio">Portofolio</span>
+              <h1 data-i18n="portfolioTitlePage">Proyek terpilih dan karya kreatif kami.</h1>
+              <p data-i18n="portfolioIntro">Contoh dari desain website, storytelling media, personal branding, dan komunikasi visual.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" data-photo-bg="tower" data-photo-tone="light">
+        <div class="container portfolio-list">
+          <article>
+            <span class="tag">Website</span>
+            <h3 data-i18n="portfolioW1">Website profil bisnis</h3>
+            <p data-i18n="portfolioP1">Halaman landing modern yang dirancang untuk menyampaikan nilai, kredibilitas, dan kejelasan layanan.</p>
+          </article>
+          <article>
+            <span class="tag">CV & Portfolio</span>
+            <h3 data-i18n="portfolioW2">Branding personal profesional</h3>
+            <p data-i18n="portfolioP2">Sistem portfolio dan CV yang disesuaikan untuk mahasiswa, profesional, dan pencari kerja yang ingin tampil lebih kuat.</p>
+          </article>
+          <article>
+            <span class="tag">Photography</span>
+            <h3 data-i18n="portfolioW3">Storytelling acara dan wisuda</h3>
+            <p data-i18n="portfolioP3">Dokumentasi visual hangat dan elegan untuk menyimpan emosi dan kenangan dalam bentuk yang rapi.</p>
+          </article>
+          <article>
+            <span class="tag">Videography</span>
+            <h3 data-i18n="portfolioW4">Produksi video highlight</h3>
+            <p data-i18n="portfolioP4">Storytelling bergerak untuk acara, campaign, dan promosi digital dengan daya tarik audiens yang lebih baik.</p>
+          </article>
+          <article>
+            <span class="tag">Design</span>
+            <h3 data-i18n="portfolioW5">Visual campaign kreatif</h3>
+            <p data-i18n="portfolioP5">Poster, kit Instagram, dan desain media sosial yang dibuat agar pesan lebih jelas dan lebih mudah diingat.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div>
+          <a href="../index.html" class="brand footer-brand">
+            <span class="brand-logo-frame"><img class="brand-logo" src="../assets/images/logo/logo%20SV%20Creative.png" alt="" /></span>
+            <span class="brand-text">SV Creative</span>
+          </a>
+          <p class="footer-copy" data-i18n="footerCopy">Mitra digital kreatif untuk brand modern, organisasi, dan individu.</p>
+        </div>
+        <div>
+          <h4 data-i18n="footerNav">Navigasi</h4>
+          <ul>
+            <li><a href="../index.html" data-i18n="footerHome">Beranda</a></li>
+            <li><a href="layanan.html" data-i18n="footerServices">Layanan</a></li>
+            <li><a href="tentang.html" data-i18n="footerAbout">Tentang</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 data-i18n="footerExplore">Jelajahi</h4>
+          <ul>
+            <li><a href="faq.html" data-i18n="footerFAQ">FAQ</a></li>
+            <li><a href="kontak.html" data-i18n="navContact">Kontak</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 data-i18n="footerSocial">Sosial & kontak</h4>
+          <div class="footer-social-links" data-social-links></div>
+          <a href="#" class="footer-whatsapp-link" data-whatsapp="Halo SV Creative, saya ingin melihat portfolio Anda." data-i18n="footerChat">Chat via WhatsApp</a>
+        </div>
+      </div>
+      <div class="container footer-bottom">
+        <span>© 2026 SV Creative</span>
+        <span data-i18n="footerRights">Digital • Kreatif • Visual</span>
+      </div>
+    </footer>
+  </body>
+</html>

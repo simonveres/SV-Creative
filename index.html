@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SV Creative | Creative Digital Studio</title>
+    <meta name="description" content="SV Creative membantu bisnis, personal brand, dan organisasi tampil lebih kuat lewat website, portfolio, photography, videography, dan desain visual." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <script defer src="assets/js/main.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="welcome-bar" role="note">
+        <span data-i18n="welcomeGreeting">Selamat Datang di SV Creative</span>
+        <span class="welcome-tagline" data-i18n="welcomeDescriptor">Digital · Creative · Visual</span>
+      </div>
+      <div class="container nav-wrap">
+        <a href="index.html" class="brand" aria-label="SV Creative home">
+          <span class="brand-logo-frame"><img class="brand-logo" src="assets/images/logo/logo%20SV%20Creative.png" alt="" /></span>
+          <span class="brand-text">SV Creative</span>
+        </a>
+
+        <button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" aria-label="Buka atau tutup menu navigasi" data-i18n-aria-label="navToggleLabel">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path class="menu-line menu-line-top" d="M4 6h16"/><path class="menu-line menu-line-middle" d="M4 12h16"/><path class="menu-line menu-line-bottom" d="M4 18h16"/></svg>
+        </button>
+
+        <nav class="main-nav" id="primary-navigation" aria-label="Main navigation">
+          <a href="#home" class="active" data-i18n="navHome">Beranda</a>
+          <a href="pages/portofolio.html" data-i18n="navWork">Karya</a>
+          <a href="pages/layanan.html" data-i18n="navServices">Layanan</a>
+          <a href="pages/klien.html" data-i18n="navClients">Klien</a>
+          <a href="pages/tentang.html" data-i18n="navAbout">Tentang</a>
+          <a href="pages/kontak.html" data-i18n="navContact">Kontak</a>
+          <a href="pages/faq.html" data-i18n="footerFAQ">FAQ</a>
+        </nav>
+
+        <div class="lang-switcher">
+          <button type="button" class="lang-trigger" aria-label="Pilih Bahasa" aria-controls="language-options" aria-expanded="false">
+            <span class="lang-trigger-label">Pilih Bahasa</span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 7.5 5 5 5-5" /></svg>
+          </button>
+          <div class="lang-options" id="language-options" role="menu" aria-label="Pilih bahasa" hidden></div>
+        </div>
+
+        <a href="#" class="btn btn-primary" data-whatsapp="Halo SV Creative, saya ingin konsultasi project saya." data-i18n="bookNow">BOOK VIA WHATSAPP</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" id="home">
+        <div class="container hero-grid">
+          <div class="hero-copy">
+            <span class="eyebrow" data-i18n="heroEyebrow">Digital • Kreatif • Visual</span>
+            <h1 data-i18n="heroTitle">Dibuat untuk brand yang ingin tampak premium.</h1>
+            <p data-i18n="heroDesc">
+              SV Creative membantu bisnis, personal brand, dan organisasi tampil lebih profesional melalui website, portfolio, fotografi, videografi, dan desain visual yang strategis.
+            </p>
+            <div class="hero-actions">
+              <a href="pages/portofolio.html" class="btn btn-primary" data-i18n="heroPrimary">Lihat Karya</a>
+              <a href="#" class="btn btn-secondary" data-whatsapp="Halo SV Creative, saya ingin berdiskusi tentang kebutuhan brand saya." data-i18n="heroSecondary">Mari Bicara</a>
+            </div>
+            <ul class="proof-list">
+              <li data-i18n="proofWebsite">Website</li>
+              <li data-i18n="proofPortfolio">Portofolio</li>
+              <li data-i18n="proofPhotography">Fotografi</li>
+              <li data-i18n="proofVideography">Videografi</li>
+              <li data-i18n="proofDesign">Desain</li>
+            </ul>
+          </div>
+
+          <div class="hero-visual" aria-label="Creative agency showcase">
+            <div class="floating-card card-top">
+              <strong data-i18n="heroStat1">Digital</strong>
+              <span data-i18n="heroStat1Text">Solusi yang dirancang sesuai kebutuhan</span>
+            </div>
+            <div class="visual-panel">
+              <div class="panel-glow"></div>
+            </div>
+            <div class="floating-card card-bottom">
+              <strong data-i18n="heroStat2">Visual</strong>
+              <span data-i18n="heroStat2Text">Storytelling yang memperkuat identitas</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="services" data-photo-bg="team" data-photo-tone="light">
+        <div class="container">
+          <div class="section-head">
+            <span class="eyebrow" data-i18n="sectionServices">Apa yang Kami Lakukan</span>
+            <h2 data-i18n="sectionServicesSub">Solusi kreatif untuk pertumbuhan.</h2>
+          </div>
+
+          <div class="service-grid">
+            <article class="service-card">
+              <div class="icon-wrap">01</div>
+              <span class="tag">Website</span>
+              <h3 data-i18n="serviceWebsiteTitle">Website & landing page</h3>
+              <p data-i18n="serviceWebsiteDesc">Profil perusahaan, portofolio, website bisnis, dan halaman yang fokus pada konversi.</p>
+              <a href="pages/layanan.html" class="text-link" data-i18n="learnMore">Selengkapnya</a>
+            </article>
+
+            <article class="service-card">
+              <div class="icon-wrap">02</div>
+              <span class="tag">CV</span>
+              <h3 data-i18n="servicePortfolioTitle">CV & portfolio</h3>
+              <p data-i18n="servicePortfolioDesc">Dokumen personal brand profesional agar terasa lebih rapi, kredibel, dan berkesan.</p>
+              <a href="pages/layanan.html" class="text-link" data-i18n="learnMore">Selengkapnya</a>
+            </article>
+
+            <article class="service-card">
+              <div class="icon-wrap">03</div>
+              <span class="tag">Photo</span>
+              <h3 data-i18n="servicePhotographyTitle">Fotografi</h3>
+              <p data-i18n="servicePhotographyDesc">Dokumentasi dan storytelling untuk acara, wisuda, personal branding, dan momen penting.</p>
+              <a href="pages/layanan.html" class="text-link" data-i18n="learnMore">Selengkapnya</a>
+            </article>
+
+            <article class="service-card">
+              <div class="icon-wrap">04</div>
+              <span class="tag">Video</span>
+              <h3 data-i18n="serviceVideographyTitle">Videografi</h3>
+              <p data-i18n="serviceVideographyDesc">Video highlight, reels, dan storytelling visual untuk kanal digital.</p>
+              <a href="pages/layanan.html" class="text-link" data-i18n="learnMore">Selengkapnya</a>
+            </article>
+
+            <article class="service-card">
+              <div class="icon-wrap">05</div>
+              <span class="tag">Design</span>
+              <h3 data-i18n="serviceDesignTitle">Desain kreatif</h3>
+              <p data-i18n="serviceDesignDesc">Desain poster, kit media sosial, pitch deck, dan aset visual sesuai pesan Anda.</p>
+              <a href="pages/layanan.html" class="text-link" data-i18n="learnMore">Selengkapnya</a>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section muted-bg" id="work" data-photo-bg="tower" data-photo-tone="light">
+        <div class="container">
+          <div class="section-head">
+            <span class="eyebrow" data-i18n="sectionPortfolio">Cuplikan Portofolio</span>
+            <h2 data-i18n="portfolioTitle">Portofolio pilihan</h2>
+          </div>
+
+          <div class="portfolio-grid">
+            <article class="portfolio-card">
+              <div class="thumb thumb-one"></div>
+              <div class="portfolio-body">
+                <span class="tag">Website</span>
+                <h3 data-i18n="portfolioHome1Title">Refresh website brand</h3>
+                <p data-i18n="portfolioHome1Desc">Storytelling produk yang modern untuk bisnis yang terus tumbuh.</p>
+              </div>
+            </article>
+
+            <article class="portfolio-card">
+              <div class="thumb thumb-two"></div>
+              <div class="portfolio-body">
+                <span class="tag">CV</span>
+                <h3 data-i18n="portfolioHome2Title">Portfolio profesional</h3>
+                <p data-i18n="portfolioHome2Desc">Presentasi brand personal yang rapi untuk kesan pertama yang kuat.</p>
+              </div>
+            </article>
+
+            <article class="portfolio-card">
+              <div class="thumb thumb-three"></div>
+              <div class="portfolio-body">
+                <span class="tag">Photography</span>
+                <h3 data-i18n="portfolioHome3Title">Cakupan wisuda</h3>
+                <p data-i18n="portfolioHome3Desc">Potret dan dokumentasi yang kaya cerita dengan gaya hangat dan elegan.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" data-photo-bg="analytics" data-photo-tone="light">
+        <div class="container split-layout">
+          <div class="content-block">
+            <span class="eyebrow" data-i18n="whyUs">Kenapa memilih kami</span>
+            <h2 data-i18n="whyUsTitle">Kita gabungkan strategi, estetika, dan kejelasan.</h2>
+            <p data-i18n="whyUsText">
+              Setiap proyek dimulai dengan memahami audiens dan tujuan Anda. Dari situ, kami membangun sistem visual yang konsisten, terpercaya, dan memorable.
+            </p>
+            <ul class="check-list">
+              <li data-i18n="check1">Komunikasi yang jelas dari konsep sampai akhir</li>
+              <li data-i18n="check2">Arahan kreatif yang sesuai dengan audiens</li>
+              <li data-i18n="check3">Desain yang matang dengan tujuan bisnis yang jelas</li>
+            </ul>
+          </div>
+
+          <div class="visual-box">
+            <div class="mini-card">
+              <strong data-i18n="strategy">Strategi</strong>
+              <span data-i18n="strategyText">Perencanaan berbasis tujuan</span>
+            </div>
+            <div class="mini-card">
+              <strong data-i18n="design">Desain</strong>
+              <span data-i18n="designText">Kehadiran visual yang konsisten</span>
+            </div>
+            <div class="mini-card">
+              <strong data-i18n="delivery">Delivery</strong>
+              <span data-i18n="deliveryText">Output siap pakai</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section muted-bg" id="clients">
+        <div class="container">
+          <div class="section-head center-head">
+            <span class="eyebrow" data-i18n="testimonials">Ulasan Klien</span>
+            <h2 data-i18n="testimonialsTitle">Apa kata klien</h2>
+          </div>
+
+          <div class="service-grid client-grid">
+            <article class="service-card">
+              <div class="icon-wrap">01</div>
+              <h3 data-i18n="audienceBusiness">Bisnis & tim</h3>
+              <p data-i18n="audienceBusinessText">Website dan komunikasi visual untuk memperkenalkan usaha dengan jelas.</p>
+            </article>
+            <article class="service-card">
+              <div class="icon-wrap">02</div>
+              <h3 data-i18n="audiencePersonal">Personal brand</h3>
+              <p data-i18n="audiencePersonalText">Portofolio, CV, dan aset media yang dibangun dari cerita Anda.</p>
+            </article>
+            <article class="service-card">
+              <div class="icon-wrap">03</div>
+              <h3 data-i18n="audienceOrganization">Organisasi</h3>
+              <p data-i18n="audienceOrganizationText">Dukungan kreatif untuk program, kampanye, acara, dan kanal digital.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div>
+          <a href="index.html" class="brand footer-brand" aria-label="SV Creative home">
+            <span class="brand-logo-frame"><img class="brand-logo" src="assets/images/logo/logo%20SV%20Creative.png" alt="" /></span>
+            <span class="brand-text">SV Creative</span>
+          </a>
+          <p class="footer-copy" data-i18n="footerCopy">Mitra digital kreatif untuk brand modern, organisasi, dan individu.</p>
+        </div>
+
+        <div>
+          <h4 data-i18n="footerNav">Navigasi</h4>
+          <ul>
+            <li><a href="index.html" data-i18n="footerHome">Beranda</a></li>
+            <li><a href="pages/layanan.html" data-i18n="footerServices">Layanan</a></li>
+            <li><a href="pages/portofolio.html" data-i18n="footerPortfolio">Portofolio</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 data-i18n="footerExplore">Jelajahi</h4>
+          <ul>
+            <li><a href="pages/tentang.html" data-i18n="footerAbout">Tentang</a></li>
+            <li><a href="pages/kontak.html" data-i18n="navContact">Kontak</a></li>
+            <li><a href="pages/faq.html" data-i18n="footerFAQ">FAQ</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 data-i18n="footerSocial">Sosial & kontak</h4>
+          <div class="footer-social-links" data-social-links></div>
+          <a href="#" class="footer-whatsapp-link" data-whatsapp="Halo SV Creative, saya ingin mulai project saya." data-i18n="footerChat">Chat via WhatsApp</a>
+        </div>
+      </div>
+
+      <div class="container footer-bottom">
+        <span>© 2026 SV Creative</span>
+        <span data-i18n="footerRights">Digital • Kreatif • Visual</span>
+      </div>
+    </footer>
+  </body>
+</html>
