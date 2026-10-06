@@ -1564,6 +1564,10 @@ p {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .client-logo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .footer-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2651,9 +2655,12 @@ p {
 
   .about-service-grid,
   .about-why-grid,
-  .approach-timeline,
-  .client-logo-grid {
+  .approach-timeline {
     grid-template-columns: 1fr;
+  }
+
+  .client-logo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .about-image-frame {
