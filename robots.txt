@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /SV-Creative-OLD/
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: https://simonveres.github.io/SV-Creative/sitemap.xml

@@ -1527,6 +1527,15 @@ p {
   font-weight: 600;
 }
 
+.result-detail-link {
+  display: inline-block;
+  margin-top: auto;
+  padding-top: 8px;
+  color: var(--royal-blue);
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
 .result-chat-link:hover {
   color: var(--royal-blue);
 }
@@ -2219,6 +2228,10 @@ p {
   .testimonial-grid,
   .client-grid,
   .contact-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .service-grid:not(.client-grid) {
     grid-template-columns: 1fr;
   }
 
