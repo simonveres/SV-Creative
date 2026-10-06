@@ -51,13 +51,6 @@
       description: 'Desain poster, kit media sosial, pitch deck, dan aset visual sesuai pesan Anda.',
       examples: 'Poster, Social Media Kit, Instagram Content, Pitch Deck, Presentation Design, dan Digital Assets.'
     },
-    {
-      id: 'communication',
-      name: 'Komunikasi yang Matang',
-      keywords: ['komunikasi', 'brief', 'briefing', 'revisi', 'koordinasi', 'pendampingan', 'proses kerja'],
-      description: 'Setiap proyek dimulai dari komunikasi yang jelas agar kebutuhan, konsep, dan hasil akhir tetap selaras.',
-      examples: 'Konsultasi, briefing, memahami kebutuhan, menentukan konsep, koordinasi, revisi, pendampingan, dan finalisasi.'
-    }
   ]);
 
   const SUGGESTIONS = [
@@ -106,7 +99,7 @@
   }
 
   function detectService(text) {
-    const order = ['website', 'cv', 'photography', 'videography', 'design', 'communication'];
+    const order = ['website', 'cv', 'photography', 'videography', 'design'];
     return order.map(findService).find((service) => matchesAny(text, service.keywords)) || null;
   }
 
@@ -325,13 +318,6 @@
     state.serviceId = service.id;
     if (service.id === 'website') return answerWebsiteNeed(text);
 
-    if (service.id === 'communication') {
-      state.awaiting = null;
-      return {
-        text: 'Komunikasi yang Matang adalah cara SV-Creative mendampingi project, bukan layanan desain terpisah. Prosesnya mencakup memahami kebutuhan, briefing, menyepakati konsep, koordinasi, revisi, dan finalisasi. Bagian mana dari proses yang ingin Anda ketahui?'
-      };
-    }
-
     if (service.id === 'cv') {
       state.awaiting = 'cv-audience';
       return {
@@ -425,7 +411,7 @@
   function listServices() {
     state.awaiting = 'open-need';
     return {
-      text: 'Layanan yang tersedia meliputi Website & Landing Page, CV & Portfolio, Fotografi, Videografi, dan Desain Kreatif. Komunikasi yang Matang menjadi bagian dari pendampingan setiap project, bukan layanan desain terpisah.\n\nAnda sedang ingin membuat apa atau mencapai hasil seperti apa?'
+      text: 'Layanan yang tersedia meliputi Website & Landing Page, CV & Portfolio, Fotografi, Videografi, dan Desain Kreatif.\n\nAnda sedang ingin membuat apa atau mencapai hasil seperti apa?'
     };
   }
 

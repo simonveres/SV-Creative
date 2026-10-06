@@ -368,6 +368,79 @@ body:has(.hero) .welcome-bar {
   transform: scaleX(1);
 }
 
+.nav-results {
+  position: relative;
+  color: var(--white);
+  font-family: var(--font-heading);
+  font-weight: 600;
+}
+
+.nav-results > summary {
+  position: relative;
+  cursor: pointer;
+  list-style: none;
+  opacity: 0.74;
+  transition: color 0.3s ease, opacity 0.3s ease;
+}
+
+.nav-results > summary::-webkit-details-marker {
+  display: none;
+}
+
+.nav-results > summary::after {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin: 0 0 3px 7px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  content: "";
+  transform: rotate(45deg);
+}
+
+.nav-results[open] > summary::after {
+  margin-bottom: 0;
+  transform: rotate(225deg);
+}
+
+.nav-results > summary:hover,
+.nav-results[open] > summary {
+  color: var(--soft-blue);
+  opacity: 1;
+}
+
+.nav-results-menu {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 12px);
+  right: 0;
+  display: grid;
+  min-width: 190px;
+  gap: 2px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  box-shadow: 0 12px 28px rgba(15, 42, 67, 0.16);
+}
+
+.main-nav .nav-results-menu a {
+  display: block;
+  padding: 9px 10px;
+  border-radius: 4px;
+  color: var(--primary);
+  opacity: 1;
+}
+
+.main-nav .nav-results-menu a::after {
+  display: none;
+}
+
+.main-nav .nav-results-menu a:hover {
+  background: var(--soft-blue);
+  color: var(--primary);
+}
+
 body:has(.hero) .site-header:not(.is-scrolled) .main-nav a:hover,
 body:has(.hero) .site-header:not(.is-scrolled) .main-nav a.active {
   color: var(--sky-blue);
@@ -1738,6 +1811,34 @@ p {
 
   .nav-wrap.is-menu-open .main-nav a::after {
     display: none;
+  }
+
+  .nav-wrap.is-menu-open .nav-results {
+    width: 100%;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-wrap.is-menu-open .nav-results > summary {
+    padding: 7px 2px;
+    color: var(--primary);
+    opacity: 1;
+  }
+
+  .nav-wrap.is-menu-open .nav-results-menu {
+    position: static;
+    min-width: 0;
+    gap: 0;
+    padding: 0 0 4px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .nav-wrap.is-menu-open .nav-results-menu a {
+    padding-left: 14px;
+    border-radius: 0;
+    background: transparent;
   }
 
   .nav-wrap.is-menu-open > .btn {

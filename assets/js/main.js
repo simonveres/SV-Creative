@@ -906,6 +906,46 @@ function initMobileNavigation() {
   window.matchMedia('(min-width: 993px)').addEventListener('change', closeMenu);
 }
 
+function initResultsNavigation() {
+  const navigation = document.querySelector('.main-nav');
+  const mainScript = Array.from(document.scripts).find((script) => script.src.includes('assets/js/main.js'));
+  if (!navigation || navigation.querySelector('.nav-results') || !mainScript) return;
+
+  const categories = [
+    ['Website', 'website'],
+    ['CV & Portfolio', 'cv'],
+    ['Fotografi', 'photography'],
+    ['Videografi', 'videography'],
+    ['Desain Kreatif', 'design']
+  ];
+  const dropdown = document.createElement('details');
+  dropdown.className = 'nav-results';
+
+  const summary = document.createElement('summary');
+  summary.textContent = 'Hasil Desain';
+  dropdown.append(summary);
+
+  const menu = document.createElement('div');
+  menu.className = 'nav-results-menu';
+  menu.setAttribute('aria-label', 'Kategori Hasil Desain');
+  const resultsUrl = new URL('../../pages/hasil-desain.html', mainScript.src);
+
+  categories.forEach(([label, category]) => {
+    const link = document.createElement('a');
+    const destination = new URL(resultsUrl);
+    destination.hash = category;
+    link.href = destination.href;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = label;
+    menu.append(link);
+  });
+
+  dropdown.append(menu);
+  const workLink = navigation.querySelector('[data-i18n="navWork"]');
+  navigation.insertBefore(dropdown, workLink?.nextSibling || null);
+}
+
 function initAIAssistant() {
   const mainScript = Array.from(document.scripts).find((script) => script.src.includes('assets/js/main.js'));
   if (!mainScript || document.querySelector('[data-ai-chat-module]')) {
@@ -962,6 +1002,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderSocialLinks();
   applyContactLinks();
   initWelcomeAnimation();
+  initResultsNavigation();
   initAIAssistant();
   initMobileNavigation();
   initScrollReveals();
