@@ -2352,6 +2352,14 @@ p {
   border-radius: 8px;
   background: var(--white);
   box-shadow: 0 8px 24px rgba(15, 42, 67, 0.05);
+  transition: translate 0.24s ease, border-color 0.24s ease, box-shadow 0.24s ease;
+}
+
+.client-logo-card:hover,
+.client-logo-card:focus-within {
+  translate: 0 -3px;
+  border-color: var(--sky-blue);
+  box-shadow: 0 14px 28px rgba(15, 42, 67, 0.1);
 }
 
 .client-logo-image {
@@ -2360,6 +2368,12 @@ p {
   height: 112px;
   object-fit: contain;
   object-position: center;
+  transition: transform 0.28s ease;
+}
+
+.client-logo-card:hover .client-logo-image,
+.client-logo-card:focus-within .client-logo-image {
+  transform: scale(1.06);
 }
 
 .client-logo-name {
