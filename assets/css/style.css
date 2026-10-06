@@ -1204,6 +1204,25 @@ p {
   object-position: center;
 }
 
+.service-detail-visual--gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #EAF2F8;
+}
+
+.service-detail-visual--gallery img {
+  height: auto;
+  aspect-ratio: 3 / 2;
+  align-self: center;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--white);
+  object-fit: contain;
+}
+
 .service-detail-copy > .eyebrow {
   margin-bottom: 12px;
   color: var(--royal-blue);
