@@ -912,12 +912,12 @@ function initResultsNavigation() {
   if (!navigation || navigation.querySelector('.nav-results') || !mainScript) return;
 
   const categories = [
-    ['Website', 'website'],
-    ['Web Portofolio', 'web-portfolio'],
-    ['CV & Portfolio', 'cv'],
-    ['Fotografi', 'photography'],
-    ['Videografi', 'videography'],
-    ['Desain Kreatif', 'design']
+    ['Website', 'website.html'],
+    ['Web Portofolio', 'web-portofolio.html'],
+    ['CV & Portfolio', 'cv-portfolio.html'],
+    ['Fotografi', 'fotografi.html'],
+    ['Videografi', 'videografi.html'],
+    ['Desain Kreatif', 'desain-kreatif.html']
   ];
   const dropdown = document.createElement('details');
   dropdown.className = 'nav-results';
@@ -929,18 +929,33 @@ function initResultsNavigation() {
   const menu = document.createElement('div');
   menu.className = 'nav-results-menu';
   menu.setAttribute('aria-label', 'Kategori Hasil Desain');
-  const resultsUrl = new URL('../../pages/hasil-desain.html', mainScript.src);
 
-  categories.forEach(([label, category]) => {
+  categories.forEach(([label, page]) => {
     const link = document.createElement('a');
-    const destination = new URL(resultsUrl);
-    destination.hash = category;
-    link.href = destination.href;
+    link.href = new URL(`../../pages/hasil-desain/${page}`, mainScript.src).href;
     link.textContent = label;
     menu.append(link);
   });
 
   dropdown.append(menu);
+  const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)');
+  let openedByHover = false;
+  dropdown.addEventListener('pointerenter', () => {
+    if (!supportsHover.matches) return;
+    dropdown.open = true;
+    openedByHover = true;
+  });
+  dropdown.addEventListener('pointerleave', () => {
+    if (!openedByHover || dropdown.contains(document.activeElement)) return;
+    dropdown.open = false;
+    openedByHover = false;
+  });
+  summary.addEventListener('click', (event) => {
+    if (!supportsHover.matches || !openedByHover) return;
+    event.preventDefault();
+    openedByHover = false;
+  });
+
   const workLink = navigation.querySelector('[data-i18n="navWork"]');
   navigation.insertBefore(dropdown, workLink?.nextSibling || null);
 }

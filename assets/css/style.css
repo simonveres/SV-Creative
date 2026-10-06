@@ -1204,6 +1204,15 @@ p {
   object-position: center;
 }
 
+.service-detail-visual--poster {
+  aspect-ratio: 4 / 5;
+  background: #EAF2F8;
+}
+
+.service-detail-visual--poster img {
+  object-fit: contain;
+}
+
 .service-detail-visual--gallery {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -3189,6 +3198,10 @@ p {
 
   .service-detail-visual {
     aspect-ratio: 16 / 10;
+  }
+
+  .service-detail-visual--poster {
+    aspect-ratio: 4 / 5;
   }
 
   .service-detail-copy h2,
