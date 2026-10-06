@@ -907,17 +907,6 @@ function initMobileNavigation() {
 }
 
 function initAIAssistant() {
-  const navigation = document.querySelector('.main-nav');
-  if (navigation && !navigation.querySelector('[data-ai-chat-open]')) {
-    const link = document.createElement('a');
-    link.href = '#ai-chat';
-    link.className = 'ai-nav-link';
-    link.dataset.aiChatOpen = '';
-    link.textContent = 'AI Assistant';
-    const contactLink = navigation.querySelector('[data-i18n="navContact"]');
-    navigation.insertBefore(link, contactLink || null);
-  }
-
   const mainScript = Array.from(document.scripts).find((script) => script.src.includes('assets/js/main.js'));
   if (!mainScript || document.querySelector('[data-ai-chat-module]')) {
     return;
