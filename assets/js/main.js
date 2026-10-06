@@ -7,6 +7,7 @@ const SITE_CONTACT = Object.freeze({
 });
 
 const WHATSAPP_NUMBER = '6285284150827';
+window.SVCreativeConfig = Object.freeze({ whatsappNumber: WHATSAPP_NUMBER });
 document.documentElement.classList.add('js');
 
 const languages = [
@@ -905,6 +906,29 @@ function initMobileNavigation() {
   window.matchMedia('(min-width: 993px)').addEventListener('change', closeMenu);
 }
 
+function initAIAssistant() {
+  const navigation = document.querySelector('.main-nav');
+  if (navigation && !navigation.querySelector('[data-ai-chat-open]')) {
+    const link = document.createElement('a');
+    link.href = '#ai-chat';
+    link.className = 'ai-nav-link';
+    link.dataset.aiChatOpen = '';
+    link.textContent = 'AI Assistant';
+    const contactLink = navigation.querySelector('[data-i18n="navContact"]');
+    navigation.insertBefore(link, contactLink || null);
+  }
+
+  const mainScript = Array.from(document.scripts).find((script) => script.src.includes('assets/js/main.js'));
+  if (!mainScript || document.querySelector('[data-ai-chat-module]')) {
+    return;
+  }
+
+  const assistantScript = document.createElement('script');
+  assistantScript.src = new URL('ai-chat.js', mainScript.src).href;
+  assistantScript.dataset.aiChatModule = '';
+  document.body.append(assistantScript);
+}
+
 function initScrollReveals() {
   const revealItems = document.querySelectorAll('[data-reveal]');
   if (!revealItems.length) {
@@ -949,6 +973,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderSocialLinks();
   applyContactLinks();
   initWelcomeAnimation();
+  initAIAssistant();
   initMobileNavigation();
   initScrollReveals();
 

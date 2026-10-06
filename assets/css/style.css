@@ -1111,6 +1111,83 @@ p {
   padding: 22px 22px 26px;
 }
 
+.result-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.result-visual {
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  background: var(--surface-blue);
+}
+
+.result-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.35s ease;
+}
+
+.result-image-top {
+  object-position: center 28%;
+}
+
+.result-card:hover .result-image {
+  transform: scale(1.025);
+}
+
+.result-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 20px 22px 22px;
+}
+
+.result-number {
+  margin-bottom: 8px;
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.result-content h2 {
+  margin-bottom: 8px;
+  font-size: 1.3rem;
+}
+
+.result-content p {
+  margin-bottom: 16px;
+  font-size: 0.92rem;
+}
+
+.result-chat-link {
+  margin-top: auto;
+  padding-top: 6px;
+  color: var(--primary);
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.result-chat-link:hover {
+  color: var(--royal-blue);
+}
+
+.results-footer-cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.results-footer-cta .btn {
+  width: auto;
+}
+
 .split-layout {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
