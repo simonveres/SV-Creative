@@ -532,11 +532,11 @@
     launcher = document.createElement('button');
     launcher.type = 'button';
     launcher.className = 'ai-chat-launcher';
-    launcher.setAttribute('aria-label', 'Chat dengan AI SV-Creative');
+    launcher.setAttribute('aria-label', 'SV Creative Assistant AI');
     launcher.setAttribute('aria-haspopup', 'dialog');
     launcher.setAttribute('aria-controls', 'ai-chat-window');
     launcher.setAttribute('aria-expanded', 'false');
-    launcher.innerHTML = `<img class="ai-chat-avatar" src="${avatarUrl}" alt="" width="38" height="38"><span class="ai-launcher-status" aria-hidden="true"></span><span>Chat dengan AI</span>`;
+    launcher.innerHTML = `<img class="ai-chat-avatar" src="${avatarUrl}" alt="" width="38" height="38"><span class="ai-launcher-status" aria-hidden="true"></span><span>SV Creative Assistant AI</span>`;
 
     chatWindow = document.createElement('section');
     chatWindow.className = 'ai-chat-window';
@@ -606,7 +606,6 @@
     chatWindow.hidden = false;
     launcher.hidden = true;
     launcher.setAttribute('aria-expanded', 'true');
-    document.body.classList.add('ai-chat-open');
     addWelcome();
     const isMobile = window.matchMedia('(max-width: 600px)').matches;
     (isMobile ? closeButton : input).focus({ preventScroll: true });
@@ -617,7 +616,6 @@
     chatWindow.hidden = true;
     launcher.hidden = false;
     launcher.setAttribute('aria-expanded', 'false');
-    document.body.classList.remove('ai-chat-open');
     launcher.focus({ preventScroll: true });
   }
 

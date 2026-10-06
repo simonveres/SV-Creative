@@ -913,6 +913,7 @@ function initResultsNavigation() {
 
   const categories = [
     ['Website', 'website'],
+    ['Web Portofolio', 'web-portfolio'],
     ['CV & Portfolio', 'cv'],
     ['Fotografi', 'photography'],
     ['Videografi', 'videography'],
