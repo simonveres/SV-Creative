@@ -1,7 +1,7 @@
 const SITE_CONTACT = Object.freeze({
-  email: 'simonveressianturi160203@gmail.com',
-  instagram: 'https://www.instagram.com/simonveres_/',
-  instagramHandle: '@simonveres_',
+  email: 'svcreativepartners@gmail.com',
+  instagram: 'https://www.instagram.com/svcreative_1/',
+  instagramHandle: '@svcreative_1',
   tiktok: 'https://www.tiktok.com/@simonveres2_/',
   tiktokHandle: '@simonveres2_'
 });
