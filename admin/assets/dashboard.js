@@ -1,5 +1,10 @@
-import { db, firestoreSdk, isFirebaseConfigured, storage, storageSdk, storageSdkError } from '../../js/firebase-client.js';
+import { db, firestoreSdk, isFirebaseConfigured } from '../../js/firebase-client.js';
 import { logoutAdmin, requireAdmin } from '../../js/firebase-admin.js';
+
+const CLOUDINARY_CONFIG = Object.freeze({
+  cloudName: 'kkvhyin8',
+  uploadPreset: 'sv-creative'
+});
 
 const {
   addDoc,
@@ -11,8 +16,6 @@ const {
   serverTimestamp,
   updateDoc
 } = firestoreSdk || {};
-const { getDownloadURL, ref: storageRef, uploadBytesResumable } = storageSdk || {};
-
 const gate = document.querySelector('#admin-gate');
 const app = document.querySelector('#admin-app');
 const nav = document.querySelector('#admin-nav');
@@ -381,32 +384,58 @@ function readFormData(form, section) {
   return values;
 }
 
-function uploadServiceImage(file, documentId, saveButton) {
-  if (storageSdkError || !storage || !storageSdk || !uploadBytesResumable || !getDownloadURL) {
-    return Promise.reject(new Error('STORAGE_UNAVAILABLE'));
-  }
-
-  const safeFilename = file.name
-    .split(/[\\/]/)
-    .pop()
-    .normalize('NFKD')
-    .replace(/[^a-zA-Z0-9._-]+/g, '-')
-    .replace(/^-+|-+$/g, '') || 'image';
-  const objectRef = storageRef(storage, `services/${documentId}/${Date.now()}-${safeFilename}`);
-  const task = uploadBytesResumable(objectRef, file, { contentType: file.type });
+function uploadServiceImage(file, saveButton) {
+  const endpoint = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.cloudName}/image/upload`;
+  const uploadData = new FormData();
+  uploadData.append('file', file);
+  uploadData.append('upload_preset', CLOUDINARY_CONFIG.uploadPreset);
 
   return new Promise((resolve, reject) => {
-    task.on('state_changed', (snapshot) => {
-      const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+    const request = new XMLHttpRequest();
+    request.open('POST', endpoint);
+    request.timeout = 120_000;
+    saveButton.textContent = 'Mengunggah 0%...';
+    showNotice('Mengunggah gambar ke Cloudinary... 0%', 'success');
+
+    request.upload.addEventListener('progress', (event) => {
+      if (!event.lengthComputable) return;
+      const percent = Math.min(100, Math.round((event.loaded / event.total) * 100));
       saveButton.textContent = `Mengunggah ${percent}%...`;
-      showNotice(`Mengunggah gambar... ${percent}%`, 'success');
-    }, reject, async () => {
+      showNotice(`Mengunggah gambar ke Cloudinary... ${percent}%`, 'success');
+    });
+
+    request.addEventListener('load', () => {
+      let response;
       try {
-        resolve(await getDownloadURL(task.snapshot.ref));
-      } catch (error) {
-        reject(error);
+        response = JSON.parse(request.responseText);
+      } catch {
+        reject(new Error('CLOUDINARY_UPLOAD_FAILED'));
+        return;
+      }
+
+      if (request.status < 200 || request.status >= 300) {
+        reject(new Error('CLOUDINARY_UPLOAD_FAILED'));
+        return;
+      }
+
+      try {
+        const secureUrl = new URL(response.secure_url);
+        if (secureUrl.protocol !== 'https:' || secureUrl.hostname !== 'res.cloudinary.com') {
+          reject(new Error('CLOUDINARY_INVALID_URL'));
+          return;
+        }
+        saveButton.textContent = 'Mengunggah 100%...';
+        showNotice('Upload gambar selesai. Menyimpan data layanan...', 'success');
+        resolve(secureUrl.href);
+      } catch {
+        reject(new Error('CLOUDINARY_INVALID_URL'));
       }
     });
+
+    request.addEventListener('error', () => reject(new Error('CLOUDINARY_UPLOAD_FAILED')));
+    request.addEventListener('timeout', () => reject(new Error('CLOUDINARY_UPLOAD_FAILED')));
+    request.addEventListener('abort', () => reject(new Error('CLOUDINARY_UPLOAD_FAILED')));
+    request.send(uploadData);
   });
 }
 
@@ -436,7 +465,8 @@ async function saveRecord(form) {
     let documentRef = documentId ? doc(collectionRef, documentId) : null;
     if (activeSection === 'services' && !documentRef) documentRef = doc(collectionRef);
     if (activeSection === 'services' && selectedServiceImage) {
-      values.image = await uploadServiceImage(selectedServiceImage, documentRef.id, saveButton);
+      values.image = await uploadServiceImage(selectedServiceImage, saveButton);
+      if (!values.image) throw new Error('CLOUDINARY_INVALID_URL');
       imageUploadCompleted = true;
       saveButton.textContent = 'Menyimpan...';
     }
@@ -466,17 +496,17 @@ async function saveRecord(form) {
   } catch (error) {
     const message = error.message?.startsWith('Nilai ') || error.message?.startsWith('Slug ') || error.message?.startsWith('Pilih file ')
       ? error.message
-      : error.message === 'STORAGE_UNAVAILABLE'
-        ? 'Firebase Storage belum dapat digunakan. Periksa konfigurasi Storage dan koneksi.'
-        : error.code === 'storage/unauthorized'
-          ? 'Upload ditolak oleh Firebase Storage Rules.'
+      : error.message === 'CLOUDINARY_INVALID_URL'
+        ? 'Cloudinary tidak mengembalikan secure URL gambar yang valid. Data layanan belum disimpan.'
+        : error.message === 'CLOUDINARY_UPLOAD_FAILED'
+          ? 'Gambar gagal diunggah ke Cloudinary. Periksa preset unsigned dan koneksi.'
           : error.code === 'permission-denied'
             ? 'Akses tulis ditolak oleh Firestore Security Rules.'
             : activeSection === 'services' && selectedServiceImage && !imageUploadCompleted
-              ? 'Gambar gagal diunggah. Data layanan belum disimpan; periksa Storage Rules dan koneksi.'
+              ? 'Gambar gagal diunggah ke Cloudinary. Data layanan belum disimpan.'
               : activeSection === 'services' && selectedServiceImage && imageUploadCompleted
                 ? 'Gambar berhasil diunggah tetapi data layanan belum tersimpan. Periksa Firestore Rules dan koneksi.'
-              : 'Data gagal disimpan. Periksa input, koneksi, dan Firestore Security Rules.';
+                : 'Data gagal disimpan. Periksa input, koneksi, dan Firestore Security Rules.';
     showNotice(message);
     saveButton.disabled = false;
     saveButton.textContent = originalButtonText;
@@ -602,7 +632,7 @@ contentView.addEventListener('change', (event) => {
   preview.src = imagePreviewUrl;
   preview.hidden = false;
   filename.textContent = file.name;
-  showNotice('Preview gambar siap. Simpan untuk mengunggah ke Firebase Storage.', 'success');
+  showNotice('Preview gambar siap. Simpan untuk mengunggah ke Cloudinary.', 'success');
 });
 
 contentView.addEventListener('submit', (event) => {
