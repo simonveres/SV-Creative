@@ -1,10 +1,6 @@
 import { db, firestoreSdk, isFirebaseConfigured } from '../../js/firebase-client.js';
 import { logoutAdmin, requireAdmin } from '../../js/firebase-admin.js';
-
-const CLOUDINARY_CONFIG = Object.freeze({
-  cloudName: 'kkvhyin8',
-  uploadPreset: 'sv-creative'
-});
+import { formatImageFileSize, isCloudinaryImageUrl, uploadImageToCloudinary, validateImageFile } from './cloudinary-upload.js';
 
 const {
   addDoc,
@@ -48,7 +44,7 @@ const sections = {
       { key: 'title', label: 'Judul', required: true },
       { key: 'category', label: 'Kategori', required: true },
       { key: 'description', label: 'Deskripsi', type: 'textarea', full: true },
-      { key: 'image', label: 'Path/URL gambar' },
+      { key: 'image', label: 'Gambar portfolio', type: 'image-file', full: true },
       { key: 'projectUrl', label: 'Link proyek' },
       { key: 'date', label: 'Tanggal proyek', type: 'date' },
       { key: 'status', label: 'Status', type: 'status' },
@@ -62,7 +58,7 @@ const sections = {
       { key: 'title', label: 'Judul', required: true },
       { key: 'category', label: 'Kategori', required: true },
       { key: 'description', label: 'Deskripsi', type: 'textarea', full: true },
-      { key: 'image', label: 'Path/URL gambar' },
+      { key: 'image', label: 'Gambar hasil desain', type: 'image-file', full: true },
       { key: 'url', label: 'Link hasil' },
       { key: 'status', label: 'Status', type: 'status' },
       { key: 'order', label: 'Urutan', type: 'number', required: true }
@@ -73,7 +69,7 @@ const sections = {
     collection: 'clients',
     fields: [
       { key: 'name', label: 'Nama klien', required: true },
-      { key: 'logo', label: 'Path/URL logo' },
+      { key: 'logo', label: 'Logo klien', type: 'image-file' },
       { key: 'description', label: 'Deskripsi', type: 'textarea', full: true },
       { key: 'websiteUrl', label: 'Website' },
       { key: 'socialUrl', label: 'Media sosial' },
@@ -86,7 +82,7 @@ const sections = {
     collection: 'gallery',
     fields: [
       { key: 'title', label: 'Judul', required: true },
-      { key: 'image', label: 'Path/URL gambar', required: true },
+      { key: 'image', label: 'Gambar galeri', type: 'image-file', required: true, full: true },
       { key: 'category', label: 'Kategori', required: true },
       { key: 'description', label: 'Deskripsi', type: 'textarea', full: true },
       { key: 'status', label: 'Status', type: 'status' },
@@ -110,7 +106,7 @@ const sections = {
       { key: 'sectionKey', label: 'Kunci bagian', required: true },
       { key: 'title', label: 'Judul', required: true },
       { key: 'description', label: 'Deskripsi', type: 'textarea', full: true },
-      { key: 'image', label: 'Path/URL gambar' },
+      { key: 'image', label: 'Gambar bagian tentang', type: 'image-file', full: true },
       { key: 'status', label: 'Status', type: 'status' },
       { key: 'order', label: 'Urutan', type: 'number', required: true }
     ]
@@ -147,12 +143,8 @@ const menuItems = [
 let activeSection = 'dashboard';
 let activeRecords = [];
 let isSaving = false;
-let selectedServiceImage = null;
+let selectedImageFile = null;
 let imagePreviewUrl = '';
-
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
-const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
-const ALLOWED_IMAGE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'webp']);
 
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, (character) => ({
@@ -177,7 +169,7 @@ function slugify(value) {
 function clearImageSelection() {
   if (imagePreviewUrl) URL.revokeObjectURL(imagePreviewUrl);
   imagePreviewUrl = '';
-  selectedServiceImage = null;
+  selectedImageFile = null;
 }
 
 function showNotice(message, tone = 'error') {
@@ -244,15 +236,17 @@ function renderField(field, value) {
 
   if (field.type === 'image-file') {
     const hasCurrentImage = Boolean(value);
+    const imageRequired = field.required && !hasCurrentImage ? ' required' : '';
     return `<div class="form-field${full}">
       <span class="field-label">${escapeHtml(field.label)}</span>
       <div class="image-upload">
-        <input class="file-input" id="field-${field.key}" name="${field.key}" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" aria-label="Pilih gambar layanan">
-        <label class="button button-secondary file-picker" for="field-${field.key}">Pilih Gambar</label>
+        <input class="file-input" id="field-${field.key}" name="${field.key}" type="file" data-image-upload accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" aria-label="Pilih foto ${escapeHtml(field.label.toLowerCase())}"${imageRequired}>
+        <label class="button button-secondary file-picker" for="field-${field.key}">Pilih Foto</label>
         <span class="file-name" data-file-name>${hasCurrentImage ? 'Gambar saat ini akan dipertahankan' : 'Belum ada gambar dipilih'}</span>
+        <span class="file-size" data-file-size>${hasCurrentImage ? 'Gambar tersimpan' : ''}</span>
       </div>
       <p class="upload-help">JPG, JPEG, PNG, atau WEBP. Maksimal 5 MB.</p>
-      <img class="image-preview" data-image-preview src="${hasCurrentImage ? escapeHtml(value) : ''}" alt="Preview gambar layanan"${hasCurrentImage ? '' : ' hidden'}>
+      <img class="image-preview" data-image-preview src="${hasCurrentImage ? escapeHtml(value) : ''}" alt="Preview ${escapeHtml(field.label.toLowerCase())}"${hasCurrentImage ? '' : ' hidden'}>
     </div>`;
   }
 
@@ -330,11 +324,12 @@ function openEditor(sectionId, record) {
   const section = sections[sectionId];
   const host = document.querySelector('#editor-host');
   const editing = Boolean(record);
+  const imageField = section.fields.find((field) => field.type === 'image-file');
   const fields = section.fields.map((field) => renderField(field, record?.[field.key])).join('');
   host.innerHTML = `
     <section class="panel editor-panel">
       <h2>${editing ? 'Edit data' : 'Tambah data'}</h2>
-      <form id="content-form" data-id="${escapeHtml(record?.id || '')}" data-current-image="${sectionId === 'services' ? escapeHtml(record?.image || '') : ''}">
+      <form id="content-form" data-id="${escapeHtml(record?.id || '')}" data-image-field="${escapeHtml(imageField?.key || '')}" data-current-image="${escapeHtml(imageField ? record?.[imageField.key] || '' : '')}">
         ${fields}
         <div class="editor-actions">
           <button class="button button-primary" type="submit">${editing ? 'Simpan perubahan' : 'Simpan'}</button>
@@ -384,67 +379,13 @@ function readFormData(form, section) {
   return values;
 }
 
-function uploadServiceImage(file, saveButton) {
-  const endpoint = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.cloudName}/image/upload`;
-  const uploadData = new FormData();
-  uploadData.append('file', file);
-  uploadData.append('upload_preset', CLOUDINARY_CONFIG.uploadPreset);
-
-  return new Promise((resolve, reject) => {
-    const request = new XMLHttpRequest();
-    request.open('POST', endpoint);
-    request.timeout = 120_000;
-    saveButton.textContent = 'Mengunggah 0%...';
-    showNotice('Mengunggah gambar ke Cloudinary... 0%', 'success');
-
-    request.upload.addEventListener('progress', (event) => {
-      if (!event.lengthComputable) return;
-      const percent = Math.min(100, Math.round((event.loaded / event.total) * 100));
-      saveButton.textContent = `Mengunggah ${percent}%...`;
-      showNotice(`Mengunggah gambar ke Cloudinary... ${percent}%`, 'success');
-    });
-
-    request.addEventListener('load', () => {
-      let response;
-      try {
-        response = JSON.parse(request.responseText);
-      } catch {
-        reject(new Error('CLOUDINARY_UPLOAD_FAILED'));
-        return;
-      }
-
-      if (request.status < 200 || request.status >= 300) {
-        reject(new Error('CLOUDINARY_UPLOAD_FAILED'));
-        return;
-      }
-
-      try {
-        const secureUrl = new URL(response.secure_url);
-        if (secureUrl.protocol !== 'https:' || secureUrl.hostname !== 'res.cloudinary.com') {
-          reject(new Error('CLOUDINARY_INVALID_URL'));
-          return;
-        }
-        saveButton.textContent = 'Mengunggah 100%...';
-        showNotice('Upload gambar selesai. Menyimpan data layanan...', 'success');
-        resolve(secureUrl.href);
-      } catch {
-        reject(new Error('CLOUDINARY_INVALID_URL'));
-      }
-    });
-
-    request.addEventListener('error', () => reject(new Error('CLOUDINARY_UPLOAD_FAILED')));
-    request.addEventListener('timeout', () => reject(new Error('CLOUDINARY_UPLOAD_FAILED')));
-    request.addEventListener('abort', () => reject(new Error('CLOUDINARY_UPLOAD_FAILED')));
-    request.send(uploadData);
-  });
-}
-
 async function saveRecord(form) {
   if (isSaving) return;
   isSaving = true;
   const section = sections[activeSection];
   const saveButton = form.querySelector('[type="submit"]');
   const originalButtonText = saveButton.textContent;
+  const imageField = section.fields.find((field) => field.type === 'image-file');
   let imageUploadCompleted = false;
   saveButton.disabled = true;
   showNotice('');
@@ -453,22 +394,30 @@ async function saveRecord(form) {
     const values = readFormData(form, section);
     const collectionRef = collection(db, section.collection);
     const documentId = form.dataset.id;
-    if (activeSection === 'services') {
+    if (imageField) {
       if (form.dataset.imageError === 'true') {
         throw new Error('Pilih file gambar JPG, JPEG, PNG, atau WEBP dengan ukuran maksimal 5 MB.');
       }
+      values[imageField.key] = form.dataset.currentImage || '';
+    }
+    if (activeSection === 'services') {
       values.slug = slugify(values.slug);
       if (!values.slug) throw new Error('Slug wajib diisi dengan format URL-friendly.');
-      values.image = form.dataset.currentImage || '';
     }
 
     let documentRef = documentId ? doc(collectionRef, documentId) : null;
     if (activeSection === 'services' && !documentRef) documentRef = doc(collectionRef);
-    if (activeSection === 'services' && selectedServiceImage) {
-      values.image = await uploadServiceImage(selectedServiceImage, saveButton);
-      if (!values.image) throw new Error('CLOUDINARY_INVALID_URL');
+    if (imageField && selectedImageFile) {
+      values[imageField.key] = await uploadImageToCloudinary(selectedImageFile, {
+        onProgress: (percent) => {
+          saveButton.textContent = `Mengunggah ${percent}%...`;
+          showNotice(`Mengunggah foto ke Cloudinary... ${percent}%`, 'success');
+        }
+      });
+      if (!isCloudinaryImageUrl(values[imageField.key])) throw new Error('CLOUDINARY_INVALID_URL');
       imageUploadCompleted = true;
       saveButton.textContent = 'Menyimpan...';
+      showNotice('Foto berhasil diunggah. Menyimpan data...', 'success');
     }
 
     if (documentId) {
@@ -496,17 +445,21 @@ async function saveRecord(form) {
   } catch (error) {
     const message = error.message?.startsWith('Nilai ') || error.message?.startsWith('Slug ') || error.message?.startsWith('Pilih file ')
       ? error.message
-      : error.message === 'CLOUDINARY_INVALID_URL'
-        ? 'Cloudinary tidak mengembalikan secure URL gambar yang valid. Data layanan belum disimpan.'
-        : error.message === 'CLOUDINARY_UPLOAD_FAILED'
-          ? 'Gambar gagal diunggah ke Cloudinary. Periksa preset unsigned dan koneksi.'
-          : error.code === 'permission-denied'
-            ? 'Akses tulis ditolak oleh Firestore Security Rules.'
-            : activeSection === 'services' && selectedServiceImage && !imageUploadCompleted
-              ? 'Gambar gagal diunggah ke Cloudinary. Data layanan belum disimpan.'
-              : activeSection === 'services' && selectedServiceImage && imageUploadCompleted
-                ? 'Gambar berhasil diunggah tetapi data layanan belum tersimpan. Periksa Firestore Rules dan koneksi.'
-                : 'Data gagal disimpan. Periksa input, koneksi, dan Firestore Security Rules.';
+      : error.message === 'CLOUDINARY_INVALID_FILE'
+        ? 'Pilih gambar JPG, JPEG, PNG, atau WEBP.'
+        : error.message === 'CLOUDINARY_INVALID_SIZE'
+          ? 'Ukuran gambar harus lebih dari 0 dan maksimal 5 MB.'
+          : error.message === 'CLOUDINARY_INVALID_URL'
+        ? 'Cloudinary tidak mengembalikan secure URL gambar yang valid. Data belum disimpan.'
+            : error.message === 'CLOUDINARY_UPLOAD_FAILED'
+              ? 'Foto gagal diunggah ke Cloudinary. Periksa preset unsigned dan koneksi.'
+              : error.code === 'permission-denied'
+                ? 'Akses tulis ditolak oleh Firestore Security Rules.'
+                : imageField && selectedImageFile && !imageUploadCompleted
+                  ? 'Foto gagal diunggah ke Cloudinary. Data belum disimpan.'
+                  : imageField && selectedImageFile && imageUploadCompleted
+                    ? 'Foto berhasil diunggah tetapi data belum tersimpan. Periksa Firestore Rules dan koneksi.'
+                    : 'Data gagal disimpan. Periksa input, koneksi, dan Firestore Security Rules.';
     showNotice(message);
     saveButton.disabled = false;
     saveButton.textContent = originalButtonText;
@@ -594,8 +547,8 @@ contentView.addEventListener('click', (event) => {
 });
 
 contentView.addEventListener('change', (event) => {
-  const input = event.target.closest('input[type="file"][name="image"]');
-  if (!input || activeSection !== 'services') return;
+  const input = event.target.closest('input[type="file"][data-image-upload]');
+  if (!input) return;
 
   const file = input.files?.[0];
   if (!file) return;
@@ -603,36 +556,33 @@ contentView.addEventListener('change', (event) => {
   const form = input.form;
   const preview = form.querySelector('[data-image-preview]');
   const filename = form.querySelector('[data-file-name]');
+  const fileSize = form.querySelector('[data-file-size]');
 
-  if (!ALLOWED_IMAGE_TYPES.has(file.type) || !ALLOWED_IMAGE_EXTENSIONS.has(extension)) {
+  try {
+    validateImageFile(file);
+  } catch (error) {
     clearImageSelection();
     form.dataset.imageError = 'true';
     input.value = '';
     preview.src = form.dataset.currentImage || '';
     preview.hidden = !form.dataset.currentImage;
-    filename.textContent = 'Format file tidak didukung';
-    showNotice('Pilih gambar JPG, JPEG, PNG, atau WEBP.');
-    return;
-  }
-  if (file.size > MAX_IMAGE_SIZE) {
-    clearImageSelection();
-    form.dataset.imageError = 'true';
-    input.value = '';
-    preview.src = form.dataset.currentImage || '';
-    preview.hidden = !form.dataset.currentImage;
-    filename.textContent = 'Ukuran file melebihi 5 MB';
-    showNotice('Ukuran gambar maksimal 5 MB.');
+    filename.textContent = error.message === 'CLOUDINARY_INVALID_SIZE' ? 'Ukuran file tidak valid' : 'Format file tidak didukung';
+    fileSize.textContent = '';
+    showNotice(error.message === 'CLOUDINARY_INVALID_SIZE'
+      ? 'Ukuran gambar harus lebih dari 0 dan maksimal 5 MB.'
+      : 'Pilih gambar JPG, JPEG, PNG, atau WEBP.');
     return;
   }
 
   form.dataset.imageError = 'false';
   clearImageSelection();
-  selectedServiceImage = file;
+  selectedImageFile = file;
   imagePreviewUrl = URL.createObjectURL(file);
   preview.src = imagePreviewUrl;
   preview.hidden = false;
   filename.textContent = file.name;
-  showNotice('Preview gambar siap. Simpan untuk mengunggah ke Cloudinary.', 'success');
+  fileSize.textContent = formatImageFileSize(file.size);
+  showNotice('Preview siap. Simpan untuk mengunggah foto ke Cloudinary.', 'success');
 });
 
 contentView.addEventListener('submit', (event) => {
