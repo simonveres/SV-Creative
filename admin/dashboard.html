@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Dashboard | SV-Creative</title>
+    <link rel="stylesheet" href="assets/admin.css">
+    <script type="module" src="assets/dashboard.js"></script>
+  </head>
+  <body class="dashboard-page">
+    <main id="admin-gate" class="access-gate" role="status" aria-live="polite">Memverifikasi akses administrator...</main>
+    <div id="admin-app" class="admin-shell" hidden>
+      <aside class="sidebar">
+        <a class="admin-brand" href="../index.html" aria-label="SV-Creative home">SV<span>Creative</span></a>
+        <p class="sidebar-label">CONTENT MANAGEMENT</p>
+        <nav id="admin-nav" class="admin-nav" aria-label="Menu dashboard"></nav>
+        <div class="sidebar-bottom">
+          <span id="admin-email" class="admin-email"></span>
+          <button id="logout-button" class="nav-button nav-logout" type="button">Keluar</button>
+        </div>
+      </aside>
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">SV-CREATIVE / ADMIN</p>
+            <h1 id="page-title">Dashboard</h1>
+          </div>
+          <a class="back-link" href="../index.html">Lihat website <span aria-hidden="true">↗</span></a>
+        </header>
+        <div id="admin-notice" class="notice" role="status" aria-live="polite" hidden></div>
+        <section id="content-view" class="content-view" aria-live="polite"></section>
+      </main>
+    </div>
+  </body>
+</html>

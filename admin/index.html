@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Admin Login | SV-Creative</title>
+    <link rel="stylesheet" href="assets/admin.css">
+    <script type="module" src="assets/login.js"></script>
+  </head>
+  <body class="login-page">
+    <main class="login-panel">
+      <a class="admin-brand" href="../index.html" aria-label="SV-Creative home">SV<span>Creative</span></a>
+      <p class="eyebrow">CONTENT MANAGEMENT</p>
+      <h1>Admin Login</h1>
+      <p class="login-intro">Masuk untuk mengelola konten SV-Creative.</p>
+      <form id="login-form" class="login-form">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" autocomplete="username" required>
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+        <p id="login-message" class="notice" role="status" aria-live="polite" hidden></p>
+        <button id="login-submit" class="button button-primary" type="submit">Masuk</button>
+      </form>
+      <a class="back-link" href="../index.html">Kembali ke website</a>
+    </main>
+  </body>
+</html>
