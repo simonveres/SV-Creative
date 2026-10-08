@@ -1,1 +1,4 @@
 ﻿SV-Creative-OLD/
+.env
+.env.local
+.env.*.local
