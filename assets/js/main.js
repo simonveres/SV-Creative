@@ -1009,7 +1009,8 @@ document.addEventListener('DOMContentLoaded', () => {
     button.addEventListener('click', (event) => {
       event.preventDefault();
       const message = encodeURIComponent(button.dataset.whatsapp || 'Halo SV Creative, saya ingin konsultasi project.');
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank', 'noopener');
+      const whatsappNumber = button.dataset.whatsappNumber || WHATSAPP_NUMBER;
+      window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank', 'noopener');
     });
   });
 
