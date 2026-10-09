@@ -178,6 +178,14 @@ function showNotice(message, tone = 'error') {
   notice.hidden = !message;
 }
 
+function logAdminOperationError(operation, error, collectionName) {
+  console.error('[Admin] Firebase operation failed.', {
+    operation,
+    collection: collectionName,
+    errorCode: typeof error?.code === 'string' ? error.code : 'unknown'
+  });
+}
+
 function renderNavigation() {
   nav.innerHTML = menuItems.map((item) => `
     <button class="nav-button" type="button" data-view="${item.id}"${item.id === activeSection ? ' aria-current="page"' : ''}>${escapeHtml(item.label)}</button>
@@ -213,7 +221,7 @@ async function renderOverview() {
       count: (await readCollection(section.collection)).length
     })));
     contentView.innerHTML = `
-      <div class="page-intro"><div><h2>Ringkasan konten</h2><p>Data tersimpan di Firestore. Konten publik masih menggunakan HTML yang ada.</p></div></div>
+      <div class="page-intro"><div><h2>Ringkasan konten</h2><p>Data tersimpan di Firestore dan ditampilkan pada halaman publik sesuai status publikasi.</p></div></div>
       <div class="stats-grid">${counts.map((item) => `
         <article class="stat-card"><span>${escapeHtml(item.label)}</span><strong>${item.count}</strong></article>
       `).join('')}</div>
@@ -221,7 +229,8 @@ async function renderOverview() {
         <button class="quick-link" type="button" data-view="${id}">${escapeHtml(item.label)}</button>
       `).join('')}</div></section>
     `;
-  } catch {
+  } catch (error) {
+    logAdminOperationError('load-overview', error);
     contentView.innerHTML = '<div class="panel"><p class="empty-state">Ringkasan belum dapat dimuat. Periksa konfigurasi Firestore dan Security Rules.</p></div>';
   }
 }
@@ -312,9 +321,15 @@ async function loadRecords(sectionId) {
         `).join('')}</tbody>
       </table></div>
     `;
-  } catch {
+  } catch (error) {
+    logAdminOperationError('load-collection', error, sections[sectionId].collection);
     if (recordsHost) {
-      recordsHost.innerHTML = '<div class="panel"><p class="empty-state">Data gagal dimuat. Periksa Firestore Security Rules dan koneksi.</p></div>';
+      const message = error.code === 'permission-denied'
+        ? 'Akses baca ditolak oleh Firestore Security Rules.'
+        : error.code === 'failed-precondition'
+          ? 'Firestore menolak query. Periksa koleksi, indeks yang diminta, dan Security Rules.'
+          : 'Data gagal dimuat. Periksa konfigurasi Firebase, koneksi, dan Security Rules.';
+      recordsHost.innerHTML = `<div class="panel"><p class="empty-state">${escapeHtml(message)}</p></div>`;
     }
   }
 }
@@ -443,6 +458,7 @@ async function saveRecord(form) {
     await loadRecords(activeSection);
     document.querySelector('#editor-host').innerHTML = '';
   } catch (error) {
+    logAdminOperationError(documentId ? 'update-document' : 'create-document', error, section.collection);
     const message = error.message?.startsWith('Nilai ') || error.message?.startsWith('Slug ') || error.message?.startsWith('Pilih file ')
       ? error.message
       : error.message === 'CLOUDINARY_INVALID_FILE'
@@ -479,6 +495,7 @@ async function deleteRecord(recordId) {
     showNotice('Data berhasil dihapus.', 'success');
     await loadRecords(activeSection);
   } catch (error) {
+    logAdminOperationError('delete-document', error, sections[activeSection].collection);
     showNotice(error.code === 'permission-denied'
       ? 'Akses hapus ditolak oleh Firestore Security Rules.'
       : 'Data gagal dihapus. Periksa koneksi dan Firestore Security Rules.');
@@ -596,7 +613,8 @@ logoutButton.addEventListener('click', async () => {
   try {
     await logoutAdmin();
     window.location.replace('index.html');
-  } catch {
+  } catch (error) {
+    logAdminOperationError('logout', error);
     showNotice('Logout gagal. Periksa koneksi lalu coba lagi.');
     logoutButton.disabled = false;
   }

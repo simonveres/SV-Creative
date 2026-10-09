@@ -1,4 +1,6 @@
 ﻿SV-Creative-OLD/
+node_modules/
+dist/
 .env
 .env.local
 .env.*.local
