@@ -698,7 +698,7 @@ function applyLanguage(lang) {
       element.setAttribute('aria-label', locale[key]);
     }
   });
-
+  document.dispatchEvent(new CustomEvent('svcreative:language-change', { detail: { language } }));
 }
 
 function initLanguageSelector() {

@@ -20,8 +20,198 @@ const pageTitle = document.querySelector('#page-title');
 const notice = document.querySelector('#admin-notice');
 const adminEmail = document.querySelector('#admin-email');
 const logoutButton = document.querySelector('#logout-button');
+const publicPageRoutes = {
+  home: '../index.html',
+  portfolio: '../pages/portofolio.html',
+  services: '../pages/layanan.html',
+  clients: '../pages/klien.html',
+  about: '../pages/tentang.html',
+  contact: '../pages/kontak.html',
+  faq: '../pages/faq.html',
+  results: '../pages/hasil-desain.html',
+  'service-website': '../pages/website.html',
+  'service-web-portfolio': '../pages/web-portofolio.html',
+  'service-cv-portfolio': '../pages/cv-portfolio.html',
+  'service-photography': '../pages/fotografi.html',
+  'service-videography': '../pages/videografi.html',
+  'service-design': '../pages/desain-kreatif.html',
+  'result-website': '../pages/hasil-desain/website.html',
+  'result-web-portfolio': '../pages/hasil-desain/web-portofolio.html',
+  'result-cv-portfolio': '../pages/hasil-desain/cv-portfolio.html',
+  'result-photography': '../pages/hasil-desain/fotografi.html',
+  'result-videography': '../pages/hasil-desain/videografi.html',
+  'result-design': '../pages/hasil-desain/desain-kreatif.html'
+};
+const publicPageDocumentCache = new Map();
+
+const pageCopySections = {
+  copy_shared: { label: 'Identitas & Footer', collection: 'about', pageKey: 'shared' },
+  copy_home: { label: 'Beranda (teks)', collection: 'about', pageKey: 'home' },
+  copy_portfolio: { label: 'Karya (teks)', collection: 'about', pageKey: 'portfolio' },
+  copy_services: { label: 'Layanan (teks)', collection: 'about', pageKey: 'services' },
+  copy_clients: { label: 'Klien (teks)', collection: 'about', pageKey: 'clients' },
+  copy_about: { label: 'Tentang (teks)', collection: 'about', pageKey: 'about' },
+  copy_contact: { label: 'Kontak (teks)', collection: 'about', pageKey: 'contact' },
+  copy_faq: { label: 'FAQ (teks)', collection: 'about', pageKey: 'faq' },
+  copy_results: { label: 'Hasil Desain (teks)', collection: 'about', pageKey: 'results' },
+  copy_service_website: { label: 'Layanan / Website', collection: 'about', pageKey: 'service-website' },
+  copy_service_web_portfolio: { label: 'Layanan / Web Portofolio', collection: 'about', pageKey: 'service-web-portfolio' },
+  copy_service_cv: { label: 'Layanan / CV & Portofolio', collection: 'about', pageKey: 'service-cv-portfolio' },
+  copy_service_photography: { label: 'Layanan / Fotografi', collection: 'about', pageKey: 'service-photography' },
+  copy_service_videography: { label: 'Layanan / Videografi', collection: 'about', pageKey: 'service-videography' },
+  copy_service_design: { label: 'Layanan / Desain Kreatif', collection: 'about', pageKey: 'service-design' },
+  copy_result_website: { label: 'Hasil / Website', collection: 'about', pageKey: 'result-website' },
+  copy_result_web_portfolio: { label: 'Hasil / Web Portofolio', collection: 'about', pageKey: 'result-web-portfolio' },
+  copy_result_cv: { label: 'Hasil / CV & Portofolio', collection: 'about', pageKey: 'result-cv-portfolio' },
+  copy_result_photography: { label: 'Hasil / Fotografi', collection: 'about', pageKey: 'result-photography' },
+  copy_result_videography: { label: 'Hasil / Videografi', collection: 'about', pageKey: 'result-videography' },
+  copy_result_design: { label: 'Hasil / Desain Kreatif', collection: 'about', pageKey: 'result-design' }
+};
+
+const processSectionDefinitions = [
+  ['services', 'Layanan / Proses Umum', 'services'],
+  ['website', 'Proses / Website', 'service-website'],
+  ['web_portfolio', 'Proses / Web Portofolio', 'service-web-portfolio'],
+  ['cv_portfolio', 'Proses / CV & Portofolio', 'service-cv-portfolio'],
+  ['photography', 'Proses / Fotografi', 'service-photography'],
+  ['videography', 'Proses / Videografi', 'service-videography'],
+  ['design', 'Proses / Desain Kreatif', 'service-design']
+];
+const processSections = Object.fromEntries(processSectionDefinitions.map(([id, label, pageKey]) => [
+  `process_${id}`,
+  {
+    label,
+    collection: 'about',
+    pageKey,
+    contentType: 'process',
+    group: 'Daftar Proses',
+    fields: [
+      { key: 'title', label: 'Langkah proses', required: true },
+      { key: 'description', label: 'Deskripsi langkah', type: 'textarea', required: true, full: true },
+      { key: 'status', label: 'Status', type: 'status' },
+      { key: 'order', label: 'Urutan', type: 'number', required: true }
+    ]
+  }
+]));
+const detailFaqDefinitions = [
+  ['website', 'FAQ / Website', 'service-website'],
+  ['web_portfolio', 'FAQ / Web Portofolio', 'service-web-portfolio'],
+  ['cv_portfolio', 'FAQ / CV & Portofolio', 'service-cv-portfolio'],
+  ['photography', 'FAQ / Fotografi', 'service-photography'],
+  ['videography', 'FAQ / Videografi', 'service-videography'],
+  ['design', 'FAQ / Desain Kreatif', 'service-design']
+];
+const detailFaqSections = Object.fromEntries(detailFaqDefinitions.map(([id, label, pageKey]) => [
+  `faq_${id}`,
+  {
+    label,
+    collection: 'faq',
+    pageKey,
+    contentType: 'detail-faq',
+    group: 'FAQ Detail Layanan',
+    fields: [
+      { key: 'question', label: 'Pertanyaan', required: true },
+      { key: 'answer', label: 'Jawaban', type: 'textarea', required: true, full: true },
+      { key: 'status', label: 'Status', type: 'status' },
+      { key: 'order', label: 'Urutan', type: 'number', required: true }
+    ]
+  }
+]));
+const publicListDefinitions = [
+  ['home-proof', 'Beranda / Poin Layanan', 'home', 'proof-list', 'text'],
+  ['home-benefits', 'Beranda / Alasan Memilih', 'home', 'check-list', 'text'],
+  ['home-highlights', 'Beranda / Kartu Sorotan', 'home', '.visual-box', 'mini-card'],
+  ['home-audiences', 'Beranda / Audiens', 'home', '#clients .client-grid', 'card'],
+  ...[
+    ['website', 'Website'], ['cv', 'CV & Portofolio'], ['photography', 'Fotografi'],
+    ['videography', 'Videografi'], ['design', 'Desain Kreatif']
+  ].map(([id, label]) => [
+    `services-${id}-facts`, `Layanan / ${label} / Poin`, 'services', `#${id} .service-detail-facts ul`, 'text'
+  ]),
+  ...[
+    ['website', 'Website', true], ['web-portfolio', 'Web Portofolio', true],
+    ['cv-portfolio', 'CV & Portofolio', false], ['photography', 'Fotografi', true],
+    ['videography', 'Videografi', true], ['design', 'Desain Kreatif', true]
+  ].flatMap(([id, label, hasSecondary]) => [
+    [`service-${id}-facts-primary`, `Detail Layanan / ${label} / Poin Utama`, `service-${id}`,
+      '.service-detail-grid:not(.service-detail-grid--reverse) .service-detail-facts ul', 'text'],
+    ...(hasSecondary ? [[`service-${id}-facts-secondary`, `Detail Layanan / ${label} / Poin Tambahan`, `service-${id}`,
+      '.service-detail-grid--reverse .service-detail-facts ul', 'text']] : [])
+  ]),
+  ...[
+    ['website', 'Website'], ['web-portfolio', 'Web Portofolio'], ['cv-portfolio', 'CV & Portofolio'],
+    ['photography', 'Fotografi'], ['videography', 'Videografi'], ['design', 'Desain Kreatif']
+  ].map(([id, label]) => [
+    `result-${id}-facts`, `Hasil Desain / ${label} / Poin`, `result-${id}`,
+    '.service-detail-copy .service-detail-facts ul', 'text'
+  ]),
+  ['about-story', 'Tentang / Cerita', 'about', '.story-timeline', 'timeline'],
+  ['about-mission', 'Tentang / Misi', 'about', '.mission-list', 'text'],
+  ['about-capabilities', 'Tentang / Kapabilitas', 'about', '.about-service-grid', 'capability'],
+  ['about-approach', 'Tentang / Pendekatan', 'about', '.approach-timeline', 'timeline'],
+  ['about-reasons', 'Tentang / Keunggulan', 'about', '.about-why-grid', 'card']
+];
+const publicListSections = Object.fromEntries(publicListDefinitions.map(([listKey, label, pageKey, targetSelector, itemType]) => [
+  `list_${listKey}`,
+  {
+    label,
+    collection: 'about',
+    pageKey,
+    listKey,
+    targetSelector,
+    itemType,
+    contentType: 'public-list-item',
+    group: pageKey === 'home'
+      ? 'Daftar Beranda'
+      : pageKey === 'services' || pageKey.startsWith('service-')
+        ? 'Poin Layanan'
+        : pageKey.startsWith('result-')
+          ? 'Poin Hasil Desain'
+          : 'Daftar Tentang',
+    fields: [
+      { key: 'title', label: itemType === 'text' ? 'Teks item' : 'Judul item', required: true },
+      ...(itemType === 'text' ? [] : [{ key: 'description', label: 'Deskripsi', type: 'textarea', full: true }]),
+      ...(itemType === 'capability' ? [
+        { key: 'items', label: 'Poin rincian (satu per baris)', type: 'textarea', full: true },
+        { key: 'linkLabel', label: 'Teks tautan' },
+        { key: 'linkUrl', label: 'URL tautan' }
+      ] : []),
+      { key: 'status', label: 'Status', type: 'status' },
+      { key: 'order', label: 'Urutan', type: 'number', required: true }
+    ]
+  }
+]));
+
+Object.values(pageCopySections).forEach((section) => {
+  section.group = section.pageKey === 'shared'
+    ? 'Identitas Website'
+    : section.pageKey.startsWith('service-')
+    ? 'Subhalaman Layanan'
+    : section.pageKey.startsWith('result-')
+      ? 'Kategori Hasil Desain'
+      : 'Menu Utama';
+  section.fields = [
+    { key: 'sectionKey', label: 'Kunci teks (data-i18n, ID, atau selector CSS)' },
+    { key: 'title', label: 'Teks halaman (Indonesia)', type: 'textarea', full: true },
+    { key: 'imageSelector', label: 'Selector gambar (opsional)' },
+    { key: 'image', label: 'Gambar halaman', type: 'image-file', full: true },
+    { key: 'imageAlt', label: 'Teks alternatif gambar' },
+    { key: 'linkSelector', label: 'Selector tautan (opsional)' },
+    { key: 'linkUrl', label: 'URL tautan' },
+    { key: 'linkLabel', label: 'Teks tautan' },
+    { key: 'whatsappSelector', label: 'Selector tombol WhatsApp' },
+    { key: 'whatsappMessage', label: 'Pesan tombol WhatsApp', type: 'textarea', full: true },
+    { key: 'status', label: 'Status', type: 'status' },
+    { key: 'order', label: 'Urutan', type: 'number', required: true }
+  ];
+  section.contentType = 'page-copy';
+});
 
 const sections = {
+  ...pageCopySections,
+  ...processSections,
+  ...detailFaqSections,
+  ...publicListSections,
   services: {
     label: 'Layanan',
     collection: 'services',
@@ -37,7 +227,7 @@ const sections = {
     ]
   },
   portfolio: {
-    label: 'Portfolio',
+    label: 'Karya',
     collection: 'portfolio',
     fields: [
       { key: 'slug', label: 'Slug', required: true },
@@ -92,6 +282,7 @@ const sections = {
   faq: {
     label: 'FAQ',
     collection: 'faq',
+    excludePageContent: true,
     fields: [
       { key: 'question', label: 'Pertanyaan', required: true },
       { key: 'answer', label: 'Jawaban', type: 'textarea', required: true, full: true },
@@ -102,6 +293,7 @@ const sections = {
   about: {
     label: 'Tentang',
     collection: 'about',
+    excludePageContent: true,
     fields: [
       { key: 'sectionKey', label: 'Kunci bagian', required: true },
       { key: 'title', label: 'Judul', required: true },
@@ -119,6 +311,7 @@ const sections = {
       { key: 'whatsapp', label: 'WhatsApp' },
       { key: 'email', label: 'Email', type: 'email' },
       { key: 'instagram', label: 'Instagram' },
+      { key: 'tiktok', label: 'TikTok' },
       { key: 'address', label: 'Alamat', type: 'textarea' },
       { key: 'businessHours', label: 'Jam operasional', type: 'textarea' },
       { key: 'socialLinks', label: 'Link sosial media (JSON)', type: 'json', full: true },
@@ -129,16 +322,56 @@ const sections = {
   site_settings: {
     label: 'Pengaturan',
     collection: 'site_settings',
+    excludePageContent: true,
     fields: [
       { key: 'key', label: 'Key', required: true },
-      { key: 'value', label: 'Value (JSON)', type: 'json', required: true, full: true }
+      { key: 'value', label: 'Value (JSON atau teks)', type: 'json-or-text', required: true, full: true }
     ]
   }
 };
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard' },
-  ...Object.entries(sections).map(([id, section]) => ({ id, label: section.label }))
+  { type: 'group', label: 'Identitas Website' },
+  ...Object.entries(pageCopySections)
+    .filter(([, section]) => section.group === 'Identitas Website')
+    .map(([id, section]) => ({ id, label: section.label })),
+  { type: 'group', label: 'Halaman Publik' },
+  ...Object.entries(pageCopySections)
+    .filter(([, section]) => section.group === 'Menu Utama')
+    .map(([id, section]) => ({ id, label: section.label })),
+  { type: 'group', label: 'Subhalaman Layanan' },
+  ...Object.entries(pageCopySections)
+    .filter(([, section]) => section.group === 'Subhalaman Layanan')
+    .map(([id, section]) => ({ id, label: section.label })),
+  { type: 'group', label: 'Kategori Hasil Desain' },
+  ...Object.entries(pageCopySections)
+    .filter(([, section]) => section.group === 'Kategori Hasil Desain')
+    .map(([id, section]) => ({ id, label: section.label })),
+  { type: 'group', label: 'Daftar Proses' },
+  ...Object.entries(processSections).map(([id, section]) => ({ id, label: section.label })),
+  { type: 'group', label: 'FAQ Detail Layanan' },
+  ...Object.entries(detailFaqSections).map(([id, section]) => ({ id, label: section.label })),
+  { type: 'group', label: 'Daftar Beranda' },
+  ...Object.entries(publicListSections)
+    .filter(([, section]) => section.group === 'Daftar Beranda')
+    .map(([id, section]) => ({ id, label: section.label })),
+  { type: 'group', label: 'Poin Layanan' },
+  ...Object.entries(publicListSections)
+    .filter(([, section]) => section.group === 'Poin Layanan')
+    .map(([id, section]) => ({ id, label: section.label })),
+  { type: 'group', label: 'Poin Hasil Desain' },
+  ...Object.entries(publicListSections)
+    .filter(([, section]) => section.group === 'Poin Hasil Desain')
+    .map(([id, section]) => ({ id, label: section.label })),
+  { type: 'group', label: 'Daftar Tentang' },
+  ...Object.entries(publicListSections)
+    .filter(([, section]) => section.group === 'Daftar Tentang')
+    .map(([id, section]) => ({ id, label: section.label })),
+  { type: 'group', label: 'Daftar dan Pengaturan' },
+  ...Object.entries(sections)
+    .filter(([, section]) => !section.pageKey)
+    .map(([id, section]) => ({ id, label: section.label }))
 ];
 let activeSection = 'dashboard';
 let activeRecords = [];
@@ -166,6 +399,56 @@ function slugify(value) {
     .replace(/^-+|-+$/g, '');
 }
 
+async function getPublicPageDocument(pageKey) {
+  if (publicPageDocumentCache.has(pageKey)) return publicPageDocumentCache.get(pageKey);
+  const route = publicPageRoutes[pageKey];
+  if (!route) throw new Error(`Halaman publik "${pageKey}" tidak terdaftar untuk validasi.`);
+  const response = await fetch(new URL(route, window.location.href), { cache: 'no-store' });
+  if (!response.ok) throw new Error(`Halaman publik "${pageKey}" tidak dapat dimuat untuk validasi.`);
+  const html = await response.text();
+  const publicDocument = new DOMParser().parseFromString(html, 'text/html');
+  publicPageDocumentCache.set(pageKey, publicDocument);
+  return publicDocument;
+}
+
+async function validatePublicSelector(pageKey, selector, targetType, label) {
+  if (!selector) return;
+  const pageKeys = pageKey === 'shared' ? Object.keys(publicPageRoutes) : [pageKey];
+  const supportedTextTags = new Set(['H1', 'H2', 'H3', 'P', 'LI', 'SPAN', 'A', 'STRONG', 'FIGCAPTION', 'SMALL']);
+  for (const targetPage of pageKeys) {
+    const publicDocument = await getPublicPageDocument(targetPage);
+    let targets;
+    try {
+      const keyedTargets = targetType === 'text'
+        ? [...publicDocument.querySelectorAll('[data-i18n], [id]')]
+          .filter((element) => element.dataset.i18n === selector || element.id === selector)
+        : [];
+      targets = keyedTargets.length ? keyedTargets : [...publicDocument.querySelectorAll(selector)];
+    } catch {
+      throw new Error(`Selector ${label} tidak valid pada halaman "${targetPage}".`);
+    }
+    const validTargets = targets.filter((element) => {
+      if (targetType === 'image') return element.tagName === 'IMG';
+      if (targetType === 'link') return element.tagName === 'A';
+      if (targetType === 'whatsapp') return element.hasAttribute('data-whatsapp');
+      return supportedTextTags.has(element.tagName);
+    });
+    if (!validTargets.length) {
+      throw new Error(`Selector ${label} tidak menemukan target yang sesuai pada halaman "${targetPage}".`);
+    }
+  }
+}
+
+function validatePublicUrl(value, label) {
+  if (!value) return;
+  try {
+    const url = new URL(value, window.location.origin);
+    if (!['http:', 'https:'].includes(url.protocol)) throw new Error();
+  } catch {
+    throw new Error(`URL ${label} harus memakai http atau https.`);
+  }
+}
+
 function clearImageSelection() {
   if (imagePreviewUrl) URL.revokeObjectURL(imagePreviewUrl);
   imagePreviewUrl = '';
@@ -187,9 +470,10 @@ function logAdminOperationError(operation, error, collectionName) {
 }
 
 function renderNavigation() {
-  nav.innerHTML = menuItems.map((item) => `
-    <button class="nav-button" type="button" data-view="${item.id}"${item.id === activeSection ? ' aria-current="page"' : ''}>${escapeHtml(item.label)}</button>
-  `).join('');
+  nav.innerHTML = menuItems.map((item) => item.type === 'group'
+    ? `<span class="nav-group-label">${escapeHtml(item.label)}</span>`
+    : `<button class="nav-button" type="button" data-view="${item.id}"${item.id === activeSection ? ' aria-current="page"' : ''}>${escapeHtml(item.label)}</button>`
+  ).join('');
 }
 
 function formatDate(value) {
@@ -211,21 +495,39 @@ async function readCollection(collectionName) {
   return snapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
 }
 
+async function readSectionRecords(section) {
+  return filterSectionRecords(section, await readCollection(section.collection));
+}
+
+function filterSectionRecords(section, records) {
+  if (section.pageKey) return records.filter((record) => record.page === section.pageKey
+    && (!section.contentType || record.contentType === section.contentType)
+    && (!section.listKey || record.listKey === section.listKey));
+  if (section.excludePageContent) return records.filter((record) => !record.page);
+  return records;
+}
+
 async function renderOverview() {
   pageTitle.textContent = 'Dashboard';
   contentView.innerHTML = '<p class="loading-line">Memuat ringkasan konten...</p>';
   try {
-    const counts = await Promise.all(Object.entries(sections).map(async ([id, section]) => ({
+    const overviewSections = Object.entries(sections).filter(([, section]) => !section.pageKey);
+    const collectionNames = [...new Set(overviewSections.map(([, section]) => section.collection))];
+    const collectionRecords = new Map(await Promise.all(collectionNames.map(async (name) => [
+      name,
+      await readCollection(name)
+    ])));
+    const counts = overviewSections.map(([id, section]) => ({
       id,
       label: section.label,
-      count: (await readCollection(section.collection)).length
-    })));
+      count: filterSectionRecords(section, collectionRecords.get(section.collection) || []).length
+    }));
     contentView.innerHTML = `
       <div class="page-intro"><div><h2>Ringkasan konten</h2><p>Data tersimpan di Firestore dan ditampilkan pada halaman publik sesuai status publikasi.</p></div></div>
       <div class="stats-grid">${counts.map((item) => `
         <article class="stat-card"><span>${escapeHtml(item.label)}</span><strong>${item.count}</strong></article>
       `).join('')}</div>
-      <section class="panel"><h2>Kelola konten</h2><div class="quick-links">${Object.entries(sections).map(([id, item]) => `
+      <section class="panel"><h2>Kelola konten</h2><div class="quick-links">${overviewSections.map(([id, item]) => `
         <button class="quick-link" type="button" data-view="${id}">${escapeHtml(item.label)}</button>
       `).join('')}</div></section>
     `;
@@ -259,7 +561,7 @@ function renderField(field, value) {
     </div>`;
   }
 
-  if (field.type === 'textarea' || field.type === 'json') {
+  if (field.type === 'textarea' || field.type === 'json' || field.type === 'json-or-text') {
     control = `<textarea class="field-input" id="field-${field.key}" name="${field.key}"${required}>${escapeHtml(currentValue)}</textarea>`;
   } else if (field.type === 'status') {
     const selected = currentValue || 'draft';
@@ -297,7 +599,7 @@ function renderCollection(sectionId) {
 async function loadRecords(sectionId) {
   const recordsHost = document.querySelector('#records-host');
   try {
-    activeRecords = await readCollection(sections[sectionId].collection);
+    activeRecords = await readSectionRecords(sections[sectionId]);
     activeRecords.sort((left, right) => Number(left.order || 0) - Number(right.order || 0));
     if (!recordsHost || activeSection !== sectionId) return;
 
@@ -387,6 +689,12 @@ function readFormData(form, section) {
       } catch {
         throw new Error(`Nilai ${field.label} harus berupa JSON yang valid.`);
       }
+    } else if (field.type === 'json-or-text') {
+      try {
+        values[field.key] = JSON.parse(rawValue);
+      } catch {
+        values[field.key] = String(rawValue ?? '').trim();
+      }
     } else {
       values[field.key] = String(rawValue ?? '').trim();
     }
@@ -407,8 +715,37 @@ async function saveRecord(form) {
 
   try {
     const values = readFormData(form, section);
+    if (section.pageKey) values.page = section.pageKey;
+    if (section.listKey) values.listKey = section.listKey;
+    if (section.listKey) values.targetSelector = section.targetSelector;
+    if (section.itemType) values.itemType = section.itemType;
+    if (section.contentType) values.contentType = section.contentType;
+    for (const [key, targetType] of [
+      ['imageSelector', 'image'],
+      ['linkSelector', 'link'],
+      ['whatsappSelector', 'whatsapp']
+    ]) {
+      await validatePublicSelector(section.pageKey, values[key], targetType, key);
+    }
+    if (section.contentType === 'page-copy' && values.sectionKey && values.title) {
+      await validatePublicSelector(section.pageKey, values.sectionKey, 'text', 'kunci teks');
+    }
+    validatePublicUrl(values.linkUrl, 'tautan');
     const collectionRef = collection(db, section.collection);
     const documentId = form.dataset.id;
+    if (section.contentType === 'page-copy' && values.sectionKey && activeRecords.some((record) => record.id !== documentId
+      && record.sectionKey === values.sectionKey)) {
+      throw new Error('Kunci teks sudah digunakan pada halaman ini.');
+    }
+    if (section.contentType === 'page-copy') {
+      const hasText = values.sectionKey && values.title;
+      const hasImage = values.imageSelector && values.image;
+      const hasLink = values.linkSelector && values.linkUrl;
+      const hasWhatsapp = values.whatsappSelector && values.whatsappMessage;
+      if (!hasText && !hasImage && !hasLink && !hasWhatsapp) {
+        throw new Error('Konten halaman memerlukan target dan nilai teks, gambar, tautan, atau WhatsApp.');
+      }
+    }
     if (imageField) {
       if (form.dataset.imageError === 'true') {
         throw new Error('Pilih file gambar JPG, JPEG, PNG, atau WEBP dengan ukuran maksimal 5 MB.');
@@ -459,7 +796,10 @@ async function saveRecord(form) {
     document.querySelector('#editor-host').innerHTML = '';
   } catch (error) {
     logAdminOperationError(documentId ? 'update-document' : 'create-document', error, section.collection);
-    const message = error.message?.startsWith('Nilai ') || error.message?.startsWith('Slug ') || error.message?.startsWith('Pilih file ')
+    const message = error.message?.startsWith('Nilai ') || error.message?.startsWith('Slug ')
+      || error.message?.startsWith('Kunci teks ') || error.message?.startsWith('Pilih file ')
+      || error.message?.startsWith('Selector ') || error.message?.startsWith('URL ')
+      || error.message?.startsWith('Konten halaman ') || error.message?.startsWith('Halaman publik ')
       ? error.message
       : error.message === 'CLOUDINARY_INVALID_FILE'
         ? 'Pilih gambar JPG, JPEG, PNG, atau WEBP.'
