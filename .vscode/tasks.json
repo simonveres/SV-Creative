@@ -1,0 +1,17 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Final worktree status",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/d",
+				"/c",
+				"git status --short"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		}
+	]
+}
